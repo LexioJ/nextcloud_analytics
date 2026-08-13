@@ -17,6 +17,7 @@ class ExternalHttpClient {
 
 	/**
 	 * @param array<string, string> $headers
+	 * @param string[] $allowedHosts hosts an administrator explicitly trusts, see ExternalUrlValidator::validate()
 	 * @return array{status: int, body: string, error: string|null}
 	 */
 	public function request(
@@ -25,8 +26,9 @@ class ExternalHttpClient {
 		array $headers = [],
 		?string $body = null,
 		?string $basicAuth = null,
+		array $allowedHosts = [],
 	): array {
-		$urlError = ExternalUrlValidator::validate($url);
+		$urlError = ExternalUrlValidator::validate($url, $allowedHosts);
 		if ($urlError !== null) {
 			return ['status' => 0, 'body' => '', 'error' => $urlError];
 		}

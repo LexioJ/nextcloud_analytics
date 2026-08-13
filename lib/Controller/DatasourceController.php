@@ -16,6 +16,7 @@ use OCA\Analytics\Datasource\IReportTemplateProvider;
 use OCA\Analytics\Datasource\LocalCsv;
 use OCA\Analytics\Datasource\LocalSpreadsheet;
 use OCA\Analytics\Datasource\LocalJson;
+use OCA\Analytics\Datasource\Prometheus;
 use OCA\Analytics\Datasource\Regex;
 use OCA\Analytics\Service\VariableService;
 use OCP\AppFramework\Controller;
@@ -36,6 +37,7 @@ class DatasourceController extends Controller {
 	private $LocalJsonService;
 	private $LocalCsvService;
 	private $LocalSpreadsheetService;
+	private $PrometheusService;
 	/** @var IEventDispatcher */
 	private $dispatcher;
 	private $l10n;
@@ -52,6 +54,7 @@ class DatasourceController extends Controller {
 	const DATASET_TYPE_EXTERNAL_JSON = 6;
 	const DATASET_TYPE_LOCAL_SPREADSHEET = 7;
 	const DATASET_TYPE_LOCAL_JSON = 8;
+	const DATASET_TYPE_PROMETHEUS = 9;
 
 	public function __construct(
 		string           $appName,
@@ -64,6 +67,7 @@ class DatasourceController extends Controller {
 		LocalJson        $LocalJsonService,
 		ExternalCsv      $ExternalCsvService,
 		LocalSpreadsheet $LocalSpreadsheetService,
+		Prometheus       $PrometheusService,
 		IL10N            $l10n,
 		IEventDispatcher $dispatcher,
 		IAppConfig       $appConfig,
@@ -78,6 +82,7 @@ class DatasourceController extends Controller {
 		$this->ExternalJsonService = $ExternalJsonService;
 		$this->LocalJsonService = $LocalJsonService;
 		$this->LocalSpreadsheetService = $LocalSpreadsheetService;
+		$this->PrometheusService = $PrometheusService;
 		$this->dispatcher = $dispatcher;
 		$this->l10n = $l10n;
 		$this->appConfig = $appConfig;
@@ -344,6 +349,7 @@ class DatasourceController extends Controller {
 			self::DATASET_TYPE_REGEX => $this->RegexService,
 			self::DATASET_TYPE_EXTERNAL_JSON => $this->ExternalJsonService,
 			self::DATASET_TYPE_LOCAL_JSON => $this->LocalJsonService,
+			self::DATASET_TYPE_PROMETHEUS => $this->PrometheusService,
 		];
 
 		if ($datasourceType !== null && isset($serviceMapping[$datasourceType])) {

@@ -7,7 +7,12 @@
 namespace OCA\Analytics\Security;
 
 class ExternalUrlValidator {
-	public static function validate(string $url): ?string {
+	/**
+	 * @param string[] $allowedHosts hosts an administrator explicitly trusts, either as "host" or "host:port".
+	 *                               A match only skips the private/reserved address check. All other
+	 *                               restrictions stay in place.
+	 */
+	public static function validate(string $url, array $allowedHosts = []): ?string {
 		$url = trim($url);
 		if ($url === '') {
 			return 'External URL is empty';
@@ -30,8 +35,19 @@ class ExternalUrlValidator {
 		if (str_starts_with($host, '[') && str_ends_with($host, ']')) {
 			$host = substr($host, 1, -1);
 		}
-		if ($host === '' || $host === 'localhost' || str_ends_with($host, '.localhost')) {
+		if ($host === '') {
 			return 'External URL host is not allowed';
+		}
+
+		$isTrusted = self::isTrustedHost($host, $parts['port'] ?? null, $allowedHosts);
+
+		if (!$isTrusted && ($host === 'localhost' || str_ends_with($host, '.localhost'))) {
+			return 'External URL host is not allowed';
+		}
+
+		// trusted hosts are allowed to point to internal infrastructure, so the address check is skipped
+		if ($isTrusted) {
+			return null;
 		}
 
 		$addresses = self::resolveHost($host);
@@ -48,8 +64,58 @@ class ExternalUrlValidator {
 		return null;
 	}
 
-	public static function isAllowed(string $url): bool {
-		return self::validate($url) === null;
+	/**
+	 * @param string[] $allowedHosts
+	 */
+	public static function isAllowed(string $url, array $allowedHosts = []): bool {
+		return self::validate($url, $allowedHosts) === null;
+	}
+
+	/**
+	 * Parse an administrator maintained allow list into single entries.
+	 *
+	 * @return string[]
+	 */
+	public static function parseAllowedHosts(string $allowedHosts): array {
+		$entries = [];
+		foreach (explode(',', $allowedHosts) as $entry) {
+			$entry = trim($entry);
+			if ($entry !== '') {
+				$entries[] = $entry;
+			}
+		}
+		return $entries;
+	}
+
+	/**
+	 * An entry without a port matches the host on any port. An entry with a port only matches that port.
+	 *
+	 * @param string[] $allowedHosts
+	 */
+	private static function isTrustedHost(string $host, $port, array $allowedHosts): bool {
+		$port = ($port === null || $port === '') ? null : (int)$port;
+
+		foreach ($allowedHosts as $allowedHost) {
+			// parsing with a dummy scheme normalises "host", "host:port" and "[ipv6]:port" the same way the URL was parsed
+			$parts = parse_url('http://' . trim($allowedHost));
+			if (!is_array($parts) || !isset($parts['host'])) {
+				continue;
+			}
+
+			$entryHost = strtolower(rtrim((string)$parts['host'], '.'));
+			if (str_starts_with($entryHost, '[') && str_ends_with($entryHost, ']')) {
+				$entryHost = substr($entryHost, 1, -1);
+			}
+			if ($entryHost !== $host) {
+				continue;
+			}
+
+			if (!isset($parts['port']) || (int)$parts['port'] === $port) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

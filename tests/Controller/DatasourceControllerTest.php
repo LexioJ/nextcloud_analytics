@@ -718,6 +718,7 @@ class DatasourceControllerTest extends TestCase {
             $this->createMock(\OCA\Analytics\Datasource\LocalJson::class),
             $this->createMock(\OCA\Analytics\Datasource\ExternalCsv::class),
             $this->createMock(\OCA\Analytics\Datasource\LocalSpreadsheet::class),
+            $this->createMock(\OCA\Analytics\Datasource\Prometheus::class),
             new FakeL10N(),
             $dispatcher ?? $this->createMock(\OCP\EventDispatcher\IEventDispatcher::class),
             $appConfig,

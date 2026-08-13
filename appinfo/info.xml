@@ -66,6 +66,9 @@ Connect data from different sources in one place and turn it into shareable insi
         </filters>
     </activity>
     <background-jobs>
+        <job>OCA\Analytics\BackgroundJob\EveryFiveMinutes</job>
+        <job>OCA\Analytics\BackgroundJob\EveryFifteenMinutes</job>
+        <job>OCA\Analytics\BackgroundJob\EveryThirtyMinutes</job>
         <job>OCA\Analytics\BackgroundJob\Hourly</job>
         <job>OCA\Analytics\BackgroundJob\Daily</job>
         <job>OCA\Analytics\BackgroundJob\EndOfDay</job>

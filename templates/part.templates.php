@@ -655,7 +655,12 @@
                     <option value="e"><?php p($l->t('Daily - End of day')); ?></option>
                     <option value="b"><?php p($l->t('Daily - Start of day')); ?></option>
                     <option value="h"><?php p($l->t('Hourly')); ?></option>
+                    <option value="t"><?php p($l->t('Every 30 minutes')); ?></option>
+                    <option value="q"><?php p($l->t('Every 15 minutes')); ?></option>
+                    <option value="5"><?php p($l->t('Every 5 minutes')); ?></option>
                 </select>
+                <br>
+                <em><?php p($l->t('Intervals below one hour require system cron.')); ?></em>
                 <br><br>
                 <span><?php p($l->t('Load via OCC command:')); ?></span>
                 <br>

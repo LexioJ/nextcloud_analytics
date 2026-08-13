@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.9.0 - unreleased
+### Added
+- New data source for Prometheus/OpenMetrics endpoints, including report templates for Nextcloud Talk.
+- Optional allow list for internal metrics hosts, maintained via `occ config:app:set analytics trustedMetricsHosts`.
+- Scheduled data loads can run every 5, 15 or 30 minutes.
+
 ## 6.7.1 - 2026-07-19
 ### Fixed
 - Keep table footer totals aligned with their columns after column reordering.
